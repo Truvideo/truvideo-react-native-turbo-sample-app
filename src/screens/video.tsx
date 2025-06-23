@@ -4,14 +4,15 @@ import CustomBtn from '../components/button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     getVideoInfo,
-    mergeVideos,
+    MergeBuilder,
     getResultPath,
     editVideo,
     compareVideos,
-    concatVideos,
-    encodeVideo,
+    ConcatBuilder,
+    EncodeBuilder,
     generateThumbnail,
     cleanNoise,
+    FrameRate,
 } from 'truvideo-react-turbo-video-sdk';
 
 interface MediaItem {
@@ -62,7 +63,9 @@ const VideoScreen: React.FC = () => {
         if (videoStatus) {
             try {
                 const resultPath = await getResultPath(`${Date.now()}-concatVideo.mp4`);
-                const result = await concatVideos(selectedItems, resultPath);
+                const request = new ConcatBuilder(selectedItems, resultPath);
+                const result = request.build();
+                (await result).process;
                 console.log('Video concatenated successfully:', result);
             } catch (error) {
                 console.error('Error concatenating videos:', error);
@@ -73,17 +76,19 @@ const VideoScreen: React.FC = () => {
     };
 
     const handleMergeVideos = async () => {
-        const config = {
-            height: '640',
-            width: '480',
-            framesRate: 'twentyFourFps',
-            videoCodec: 'h264',
-        };
-
         try {
             const resultPath = await getResultPath(`${Date.now()}-mergedVideo.mp4`);
-            const result = await mergeVideos(selectedItems, resultPath, JSON.stringify(config));
-            console.log('Videos merged successfully:', result);
+            const request = new MergeBuilder(selectedItems, resultPath);
+            request.setHeight(640);
+            request.setWigth(480);
+            request.setFrameRate(FrameRate.fiftyFps);
+            
+            const result = await request.build();
+
+            const video = await request.process();
+            // process the video
+            // (await result).process
+            console.log('Videos merged successfully:', video);
         } catch (error) {
             console.error('Error merging videos:', error);
         }
@@ -101,7 +106,12 @@ const VideoScreen: React.FC = () => {
 
         try {
             const resultPath = await getResultPath(`${Date.now()}-encodedVideo.mp4`);
-            const result = await encodeVideo(selectedItems[0], resultPath, JSON.stringify(config));
+            const request = new EncodeBuilder(selectedItems[0], resultPath);
+            request.setHeight(640);
+            request.setWigth(480);
+            request.setFrameRate(FrameRate.fiftyFps);
+            const result = request.build();
+            (await result).process();
             console.log('Video encoded successfully:', result);
         } catch (error) {
             console.error('Error encoding video:', error);
@@ -191,6 +201,7 @@ const VideoScreen: React.FC = () => {
                 <CustomBtn onPress={handleGenerateThumbnail} title="Thumbnail" />
                 <CustomBtn onPress={handleEditVideo} title="Edit" />
                 <CustomBtn onPress={handleCleanNoise} title="Clear Noise" />
+                <CustomBtn onPress={handleGetVideoInfo} title="Info" />
             </View>
         </View>
     );
