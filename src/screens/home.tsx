@@ -15,9 +15,10 @@ import {
     LensFacing,
     FlashMode,
     Orientation,
-    Mode,
+    CameraMode,
+    CameraConfiguration
 } from 'truvideo-react-turbo-camera-sdk';
-import { uploadMedia } from 'truvideo-react-turbo-media-sdk';
+import { MediaBuilder,UploadProgressEvent,UploadCompleteEventData,UploadErrorEvent } from 'truvideo-react-turbo-media-sdk';
 import QuickCrypto from 'react-native-quick-crypto';
 
 type MediaItem = {
@@ -31,53 +32,17 @@ type MediaItem = {
         width: number;
     };
     rotation: string;
-    type: 'VIDEO' | 'PICTURE';
+    type: 'VIDEO' | 'PICTURE' | 'IMAGE';
 };
 
-type Configuration = {
-    lensFacing: LensFacing;
-    flashMode: FlashMode;
-    orientation: Orientation;
-    outputPath: string;
-    frontResolutions: string[];
-    frontResolution: string;
-    backResolutions: string[];
-    backResolution: string;
-    mode: Mode;
-};
 
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation();
-    const [configuration, setConfiguration] = useState<Configuration | null>(null);
     const [uploadPath, setUploadPath] = useState<MediaItem[] | null>(null);
     const [uploadImagePath, setUploadImagePath] = useState<MediaItem[] | null>(null);
-    const [tag, setTag] = useState<Record<string, any> | undefined>(undefined);
-    const [metaData, setMetaData] = useState<Record<string, any> | undefined>(undefined);
 
     useEffect(() => {
-        const eventEmitter = new NativeEventEmitter(
-            NativeModules.TruVideoReactTurboCameraSdk
-          );
-      
-          const onUploadProgress = eventEmitter.addListener('cameraEvent', (event) => {
-            console.log('cameraEvent event:', event);
-          });
         authFunc();
-        setConfiguration({
-            lensFacing: LensFacing.Back,
-            flashMode: FlashMode.Off,
-            orientation: Orientation.Portrait,
-            outputPath: '',
-            frontResolutions: [],
-            frontResolution: 'nil',
-            backResolutions: [],
-            backResolution: 'nil',
-            mode: Mode.VideoAndPicture,
-        });
-
-        setTag({ key: 'value', color: 'red', orderNumber: 123 });
-        setMetaData({ key: 'value', key1: 1, key2: [4, 5, 6] });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const authFunc = async () => {
@@ -87,8 +52,8 @@ const HomeScreen: React.FC = () => {
             const isAuthExpired = await isAuthenticationExpired();
             //generate payload for authentication
             const payload = await generatePayload();
-            const apiKey = 'Your-api-key';
-            const secretKey = 'your-secret-key';
+            const apiKey = 'your_api_key_here'; // Replace with your actual API key
+            const secretKey = 'your_secret_key_here'; // Replace with your actual secret key
             const signature = await toSha256String(secretKey, payload);
             // Authenticate user
             if (!isAuth || isAuthExpired) {
@@ -119,36 +84,76 @@ const HomeScreen: React.FC = () => {
 
     const initCamera = async () => {
         await AsyncStorage.multiRemove(['fileList', 'fileImageList']);
-        if (configuration) {
-            initCameraScreen(configuration)
-                .then((response) => {
-                    const mediaItems: MediaItem[] = JSON.parse(response);
-                    const videos = mediaItems.filter((item) => item.type === 'VIDEO');
-                    const pictures = mediaItems.filter((item) => item.type === 'PICTURE');
-                    uploadMediaItems(mediaItems);
-                    setUploadPath(videos);
-                    setUploadImagePath(pictures);
-                    saveToStorage('fileList', videos);
-                    saveToStorage('fileImageList', pictures);
+        var cameraConfiguration  :  CameraConfiguration = {
+            lensFacing: LensFacing.Back,
+            flashMode: FlashMode.Off,
+            orientation: Orientation.Portrait,
+            outputPath: "",
+            frontResolutions: [],
+            frontResolution: null,
+            backResolutions: [],
+            backResolution: null,
+            mode: CameraMode.videoAndImage(),
 
-                })
-                .catch((err) => {
-                    console.log('err', err);
-                });
         }
+        initCameraScreen(cameraConfiguration) 
+            .then((response) => {
+                const mediaItems: MediaItem[] = JSON.parse(response);
+                const videos = mediaItems.filter((item) => item.type === 'VIDEO');
+                const pictures = mediaItems.filter((item) => item.type === 'IMAGE' || 'PICTURE');
+                uploadMediaItems(mediaItems);
+                setUploadPath(videos);
+                setUploadImagePath(pictures);
+                saveToStorage('fileList', videos);
+                saveToStorage('fileImageList', pictures);
+
+            })
+            .catch((err) => {
+                console.log('err', err);
+            });
+        
     };
 
     const uploadMediaItems = async (mediaItems: MediaItem[]) => {
-        if (tag && metaData) {
-            for (const item of mediaItems) {
-                try {
-                    const result = await uploadMedia(item.filePath, JSON.stringify(tag), JSON.stringify(metaData));
-                    console.log('Upload successful:', result);
-                } catch (error) {
-                    console.error('Upload error:', error);
-                }
+        for (const item of mediaItems) {
+            try {
+                //setTag({ key: 'value', color: 'red', orderNumber: 123 });
+                //setMetaData({ key: 'value', key1: 1, key2: [4, 5, 6] });
+                const result = new MediaBuilder(item.filePath)
+                // setTag
+                result.setTag("key","value");
+                result.setTag("color","red");
+                result.setTag("orderNumber","123");
+                // setMetaData
+                result.setMetaData("key","value");
+                result.setMetaData("key1","1");
+                result.setMetaData("key2","[4,5,6]");
+                // buiild request
+                console.log(' successful: set data');
+                var request = await result.build()
+                console.log(' successful: set build');
+                // handle callbacks
+                const uploadCallbacks = {
+                        onProgress: (event: UploadProgressEvent) => {
+                            console.log(`ID: ${event.id}, Progress: ${event.progress}%`)
+                        },
+                        onComplete: (event: UploadCompleteEventData) => { // Use 'any' or proper type for parsed data
+                            console.log(`ID: ${event.id}, Type: ${event.fileType}`)
+                        },
+                        onError: (event: UploadErrorEvent ) => {
+                            console.log(`ID: ${event.id}, Error: ${event.error}`)
+                        },
+                };
+
+                //const result = await uploadMedia(item.filePath, JSON.stringify(tag), JSON.stringify(metaData));
+                var res = await request.upload(uploadCallbacks)
+                console.log(' successful: set upload');
+                console.log('Upload successful:', res);
+            } catch (error) {
+                console.error('Upload error:', error);
             }
         }
+        
     };
 
     const saveToStorage = async (key: string, value: any) => {

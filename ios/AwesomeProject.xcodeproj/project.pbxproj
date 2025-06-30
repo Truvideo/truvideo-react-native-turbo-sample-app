@@ -13,8 +13,14 @@
 		048508E02D64A9EF00EBD21C /* TruvideoSdkImage in Frameworks */ = {isa = PBXBuildFile; productRef = 048508DF2D64A9EF00EBD21C /* TruvideoSdkImage */; };
 		048508E32D64A9FE00EBD21C /* TruvideoSdkVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 048508E22D64A9FE00EBD21C /* TruvideoSdkVideo */; };
 		048508E62D64AA0F00EBD21C /* TruvideoSdkMedia in Frameworks */ = {isa = PBXBuildFile; productRef = 048508E52D64AA0F00EBD21C /* TruvideoSdkMedia */; };
+		04AE0C532E0A80C30058A1A7 /* TruvideoSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 04AE0C522E0A80C30058A1A7 /* TruvideoSdk */; };
 		0C80B921A6F3F58F76C31292 /* libPods-AwesomeProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-AwesomeProject.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		1800690A2E127A3900E88C0E /* TruvideoSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 180069092E127A3900E88C0E /* TruvideoSdk */; };
+		1800690D2E127A4C00E88C0E /* TruvideoSdkCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 1800690C2E127A4C00E88C0E /* TruvideoSdkCamera */; };
+		180069102E127C1100E88C0E /* TruvideoSdkMedia in Frameworks */ = {isa = PBXBuildFile; productRef = 1800690F2E127C1100E88C0E /* TruvideoSdkMedia */; };
+		180069132E127C2400E88C0E /* TruvideoSdkVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 180069122E127C2400E88C0E /* TruvideoSdkVideo */; };
+		180069162E127CA500E88C0E /* TruvideoSdkImage in Frameworks */ = {isa = PBXBuildFile; productRef = 180069152E127CA500E88C0E /* TruvideoSdkImage */; };
 		1F0A46B4E54A1021BF0E4830 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -38,13 +44,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				180069102E127C1100E88C0E /* TruvideoSdkMedia in Frameworks */,
 				048508E62D64AA0F00EBD21C /* TruvideoSdkMedia in Frameworks */,
 				048508E32D64A9FE00EBD21C /* TruvideoSdkVideo in Frameworks */,
+				1800690D2E127A4C00E88C0E /* TruvideoSdkCamera in Frameworks */,
 				044F889B2D64A4E4003D616A /* TruvideoSdkCamera in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-AwesomeProject.a in Frameworks */,
 				0413718C2D78653500226FBB /* TruvideoSdkImage in Frameworks */,
+				180069162E127CA500E88C0E /* TruvideoSdkImage in Frameworks */,
+				180069132E127C2400E88C0E /* TruvideoSdkVideo in Frameworks */,
 				044F88952D64A3EB003D616A /* TruvideoSdk in Frameworks */,
 				048508E02D64A9EF00EBD21C /* TruvideoSdkImage in Frameworks */,
+				04AE0C532E0A80C30058A1A7 /* TruvideoSdk in Frameworks */,
+				1800690A2E127A3900E88C0E /* TruvideoSdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,11 +169,11 @@
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			packageReferences = (
-				044F88932D64A3EB003D616A /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */,
-				044F88992D64A4E4003D616A /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-camera" */,
-				048508E12D64A9FE00EBD21C /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-video" */,
-				048508E42D64AA0F00EBD21C /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-media" */,
-				0413718A2D78653500226FBB /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-image" */,
+				180069082E127A3900E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */,
+				1800690B2E127A4C00E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-camera" */,
+				1800690E2E127C1100E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-media" */,
+				180069112E127C2400E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-video" */,
+				180069142E127CA500E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-image" */,
 			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
@@ -210,9 +222,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AwesomeProject/Pods-AwesomeProject-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AwesomeProject/Pods-AwesomeProject-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -249,9 +265,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AwesomeProject/Pods-AwesomeProject-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AwesomeProject/Pods-AwesomeProject-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -278,6 +298,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = AKRSR3D9R9;
 				ENABLE_BITCODE = NO;
@@ -293,8 +315,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.fiveeceptions.baicam;
 				PRODUCT_NAME = AwesomeProject;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -307,6 +330,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = AKRSR3D9R9;
 				INFOPLIST_FILE = AwesomeProject/Info.plist;
@@ -321,8 +346,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.fiveeceptions.baicam;
 				PRODUCT_NAME = AwesomeProject;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -546,6 +572,54 @@
 				minimumVersion = 76.3.1;
 			};
 		};
+		04AE0C512E0A80C30058A1A7 /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-core.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 76.2.1;
+			};
+		};
+		180069082E127A3900E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-core.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 76.2.1;
+			};
+		};
+		1800690B2E127A4C00E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-camera" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-camera.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 76.7.3;
+			};
+		};
+		1800690E2E127C1100E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-media" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-media.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 76.4.5;
+			};
+		};
+		180069112E127C2400E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-video" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-video.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 76.4.2;
+			};
+		};
+		180069142E127CA500E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Truvideo/truvideo-sdk-ios-image.git";
+			requirement = {
+				kind = exactVersion;
+				version = 76.3.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -578,6 +652,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 048508E42D64AA0F00EBD21C /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-media" */;
 			productName = TruvideoSdkMedia;
+		};
+		04AE0C522E0A80C30058A1A7 /* TruvideoSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 04AE0C512E0A80C30058A1A7 /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */;
+			productName = TruvideoSdk;
+		};
+		180069092E127A3900E88C0E /* TruvideoSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180069082E127A3900E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-core" */;
+			productName = TruvideoSdk;
+		};
+		1800690C2E127A4C00E88C0E /* TruvideoSdkCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1800690B2E127A4C00E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-camera" */;
+			productName = TruvideoSdkCamera;
+		};
+		1800690F2E127C1100E88C0E /* TruvideoSdkMedia */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1800690E2E127C1100E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-media" */;
+			productName = TruvideoSdkMedia;
+		};
+		180069122E127C2400E88C0E /* TruvideoSdkVideo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180069112E127C2400E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-video" */;
+			productName = TruvideoSdkVideo;
+		};
+		180069152E127CA500E88C0E /* TruvideoSdkImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180069142E127CA500E88C0E /* XCRemoteSwiftPackageReference "truvideo-sdk-ios-image" */;
+			productName = TruvideoSdkImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

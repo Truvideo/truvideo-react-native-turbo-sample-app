@@ -4,14 +4,15 @@ import CustomBtn from '../components/button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     getVideoInfo,
-    mergeVideos,
+    MergeBuilder,
     getResultPath,
     editVideo,
     compareVideos,
-    concatVideos,
-    encodeVideo,
+    ConcatBuilder,
+    EncodeBuilder,
     generateThumbnail,
     cleanNoise,
+    FrameRate,
 } from 'truvideo-react-turbo-video-sdk';
 
 interface MediaItem {
@@ -61,8 +62,10 @@ const VideoScreen: React.FC = () => {
         const videoStatus = await handleCompareVideos();
         if (videoStatus) {
             try {
-                const resultPath = await getResultPath(`${Date.now()}-concatVideo.mp4`);
-                const result = await concatVideos(selectedItems, resultPath);
+                const resultPath = await getResultPath(`${Date.now()}-concatVideo`);
+                const request = new ConcatBuilder(selectedItems, resultPath);
+                const result = request.build();
+                (await result).process;
                 console.log('Video concatenated successfully:', result);
             } catch (error) {
                 console.error('Error concatenating videos:', error);
@@ -73,17 +76,19 @@ const VideoScreen: React.FC = () => {
     };
 
     const handleMergeVideos = async () => {
-        const config = {
-            height: '640',
-            width: '480',
-            framesRate: 'twentyFourFps',
-            videoCodec: 'h264',
-        };
-
         try {
-            const resultPath = await getResultPath(`${Date.now()}-mergedVideo.mp4`);
-            const result = await mergeVideos(selectedItems, resultPath, JSON.stringify(config));
-            console.log('Videos merged successfully:', result);
+            const resultPath = await getResultPath(`${Date.now()}-mergedVideo`);
+            const request = new MergeBuilder(selectedItems, resultPath);
+            request.setHeight(640);
+            request.setWigth(480);
+            request.setFrameRate(FrameRate.fiftyFps);
+            
+            const result = await request.build();
+
+            const video = await request.process();
+            // process the video
+            //(await result).process
+            console.log('Videos merged successfully:', video);
         } catch (error) {
             console.error('Error merging videos:', error);
         }
@@ -100,8 +105,13 @@ const VideoScreen: React.FC = () => {
         };
 
         try {
-            const resultPath = await getResultPath(`${Date.now()}-encodedVideo.mp4`);
-            const result = await encodeVideo(selectedItems[0], resultPath, JSON.stringify(config));
+            const resultPath = await getResultPath(`${Date.now()}-encodedVideo`);
+            const request = new EncodeBuilder(selectedItems[0], resultPath);
+            request.setHeight(640);
+            request.setWigth(480);
+            request.setFrameRate(FrameRate.fiftyFps);
+            const result = request.build();
+            (await result).process();
             console.log('Video encoded successfully:', result);
         } catch (error) {
             console.error('Error encoding video:', error);
@@ -112,7 +122,7 @@ const VideoScreen: React.FC = () => {
         if (!selectedItems[0]) return;
 
         try {
-            const resultPath = await getResultPath(`${Date.now()}-thumbnail.png`);
+            const resultPath = await getResultPath(`${Date.now()}-thumbnail`);
             const result = await generateThumbnail(selectedItems[0], resultPath, '1000', '640', '480');
             console.log('Thumbnail generated successfully:', result);
         } catch (error) {
@@ -124,7 +134,7 @@ const VideoScreen: React.FC = () => {
         if (!selectedItems[0]) return;
 
         try {
-            const resultPath = await getResultPath(`${Date.now()}-editVideo.mp4`);
+            const resultPath = await getResultPath(`${Date.now()}-editVideo`);
             const result = await editVideo(selectedItems[0], resultPath);
             console.log('Video edited successfully:', result);
         } catch (error) {
@@ -136,7 +146,7 @@ const VideoScreen: React.FC = () => {
         if (!selectedItems[0]) return;
 
         try {
-            const resultPath = await getResultPath(`${Date.now()}-cleanNoise.mp4`);
+            const resultPath = await getResultPath(`${Date.now()}-cleanNoise`);
             const result = await cleanNoise(selectedItems[0], resultPath);
             console.log('Noise cleaned successfully:', result);
         } catch (error) {
@@ -191,6 +201,7 @@ const VideoScreen: React.FC = () => {
                 <CustomBtn onPress={handleGenerateThumbnail} title="Thumbnail" />
                 <CustomBtn onPress={handleEditVideo} title="Edit" />
                 <CustomBtn onPress={handleCleanNoise} title="Clear Noise" />
+                <CustomBtn onPress={handleGetVideoInfo} title="Info" />
             </View>
         </View>
     );
