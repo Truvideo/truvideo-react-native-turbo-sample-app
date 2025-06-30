@@ -1211,7 +1211,7 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-quick-crypto (0.7.14):
+  - react-native-quick-crypto (0.7.15):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1234,7 +1234,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (5.4.1):
+  - react-native-safe-area-context (5.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1247,8 +1247,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.4.1)
-    - react-native-safe-area-context/fabric (= 5.4.1)
+    - react-native-safe-area-context/common (= 5.5.0)
+    - react-native-safe-area-context/fabric (= 5.5.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1257,7 +1257,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.4.1):
+  - react-native-safe-area-context/common (5.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1278,7 +1278,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.4.1):
+  - react-native-safe-area-context/fabric (5.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2009,7 +2009,7 @@ SPEC CHECKSUMS:
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: ccc24d29d650ea725d582a9a53d57cd417fbdb53
   OpenSSL-Universal: b60a3702c9fea8b3145549d421fdb018e53ab7b4
-  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
+  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: 664055db806cce35c3c1b43c84414dd66e117ae6
   RCTRequired: dc9a83fa1012054f94430d210337ca3a1afe6fc0
   RCTTypeSafety: 031cefa254a1df313a196f105b8fcffdab1c5ab6
@@ -2038,8 +2038,8 @@ SPEC CHECKSUMS:
   React-logger: 1935d6e6461e9c8be4c87af56c56a4876021171e
   React-Mapbuffer: 212171f037e3b22e6c2df839aa826806da480b85
   React-microtasksnativemodule: 72564d5469003687d39bfc4efad281df8efc0684
-  react-native-quick-crypto: 1d9be2415d3e71e06a8527ecee0c4fd214d2606e
-  react-native-safe-area-context: b6552f52e87c808d4e20da0c216e3206831b58ba
+  react-native-quick-crypto: 7fa7d991e74682e04445c150de9707d3b24f1be1
+  react-native-safe-area-context: 2b8212f37e4186b9b7f9c25122477a229f42b032
   React-nativeconfig: cb207ebba7cafce30657c7ad9f1587a8f32e4564
   React-NativeModulesApple: 82a8bee52df9f5b378195a500f22be3a6ef0f890
   React-perflogger: 8152bab3f0eb4b8751f282f9af7caed2c823a9ea

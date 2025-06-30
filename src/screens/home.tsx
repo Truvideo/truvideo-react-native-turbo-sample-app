@@ -52,8 +52,8 @@ const HomeScreen: React.FC = () => {
             const isAuthExpired = await isAuthenticationExpired();
             //generate payload for authentication
             const payload = await generatePayload();
-            const apiKey = 'EPhPPsbv7e';
-            const secretKey = '9lHCnkfeLl';
+            const apiKey = 'your_api_key_here'; // Replace with your actual API key
+            const secretKey = 'your_secret_key_here'; // Replace with your actual secret key
             const signature = await toSha256String(secretKey, payload);
             // Authenticate user
             if (!isAuth || isAuthExpired) {
@@ -93,7 +93,7 @@ const HomeScreen: React.FC = () => {
             frontResolution: null,
             backResolutions: [],
             backResolution: null,
-            mode: CameraMode.videoAndImage(10,10,10),
+            mode: CameraMode.videoAndImage(),
 
         }
         initCameraScreen(cameraConfiguration) 
