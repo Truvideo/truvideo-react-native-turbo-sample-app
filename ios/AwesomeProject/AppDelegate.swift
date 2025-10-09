@@ -18,6 +18,7 @@ class AppDelegate: RCTAppDelegate {
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
+    
   }
 
   override func bundleURL() -> URL? {

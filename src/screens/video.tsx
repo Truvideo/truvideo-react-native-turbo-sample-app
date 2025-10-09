@@ -13,7 +13,7 @@ import {
     generateThumbnail,
     cleanNoise,
     FrameRate,
-} from 'truvideo-react-turbo-video-sdk';
+} from '@trunpm/truvideo-react-turbo-video-sdk';
 
 interface MediaItem {
     filePath: string;
@@ -65,7 +65,8 @@ const VideoScreen: React.FC = () => {
                 const resultPath = await getResultPath(`${Date.now()}-concatVideo`);
                 const request = new ConcatBuilder(selectedItems, resultPath);
                 const result = request.build();
-                (await result).process;
+                (await result).process();
+                
                 console.log('Video concatenated successfully:', result);
             } catch (error) {
                 console.error('Error concatenating videos:', error);
@@ -86,6 +87,7 @@ const VideoScreen: React.FC = () => {
             const result = await request.build();
 
             const video = await request.process();
+        
             // process the video
             //(await result).process
             console.log('Videos merged successfully:', video);
@@ -108,7 +110,7 @@ const VideoScreen: React.FC = () => {
             const resultPath = await getResultPath(`${Date.now()}-encodedVideo`);
             const request = new EncodeBuilder(selectedItems[0], resultPath);
             request.setHeight(640);
-            request.setWigth(480);
+            request.setWidth(480);
             request.setFrameRate(FrameRate.fiftyFps);
             const result = request.build();
             (await result).process();

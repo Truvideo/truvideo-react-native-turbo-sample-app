@@ -1,106 +1,94 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, NativeEventEmitter,NativeModules} from 'react-native';
+import * as React from "react"
+import { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image,ActivityIndicator, NativeEventEmitter,NativeModules} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-    clearAuthentication,
-    isAuthenticated,
-    isAuthenticationExpired,
-    generatePayload,
-    authenticate,
-    initAuthentication
-} from 'truvideo-react-turbo-core-sdk';
 import {
     initCameraScreen,
     LensFacing,
     FlashMode,
     Orientation,
     CameraMode,
-    CameraConfiguration
-} from 'truvideo-react-turbo-camera-sdk';
-import { MediaBuilder,UploadProgressEvent,UploadCompleteEventData,UploadErrorEvent } from 'truvideo-react-turbo-media-sdk';
-import QuickCrypto from 'react-native-quick-crypto';
-
-type MediaItem = {
-    cameraLensFacing: string;
-    createdAt: number;
-    duration: number;
-    filePath: string;
-    id: string;
-    resolution: {
-        height: number;
-        width: number;
-    };
-    rotation: string;
-    type: 'VIDEO' | 'PICTURE' | 'IMAGE';
-};
-
+    CameraConfiguration,
+    type CameraResult,
+    CameraMediaType,
+    ImageFormat,
+    isAugmentedRealityInstalled,
+    isAugmentedRealitySupported,
+    ARCameraConfiguration,
+    initARCameraScreen,
+    Resolution
+} from '@trunpm/truvideo-react-turbo-camera-sdk';
+import { MediaBuilder,UploadProgressEvent,UploadCompleteEventData,UploadErrorEvent} from '@trunpm/truvideo-react-turbo-media-sdk';
+import { Routing } from '../../App';
 
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation();
-    const [uploadPath, setUploadPath] = useState<MediaItem[] | null>(null);
-    const [uploadImagePath, setUploadImagePath] = useState<MediaItem[] | null>(null);
+    const [uploadPath, setUploadPath] = useState<CameraResult[] | undefined>(undefined);
+    const [uploadImagePath, setUploadImagePath] = useState<CameraResult[] | undefined>(undefined);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        authFunc();
+       //clearAuth();
+        //authFunc();
     }, []);
 
-    const authFunc = async () => {
-        try {
-            const isAuth = await isAuthenticated();
-            // Check if authentication token has expired
-            const isAuthExpired = await isAuthenticationExpired();
-            //generate payload for authentication
-            const payload = await generatePayload();
-            const apiKey = 'your_api_key_here'; // Replace with your actual API key
-            const secretKey = 'your_secret_key_here'; // Replace with your actual secret key
-            const signature = await toSha256String(secretKey, payload);
-            // Authenticate user
-            if (!isAuth || isAuthExpired) {
-                await authenticate(apiKey, payload, signature, '');
-            }
-            // If user is authenticated successfully
-            const initAuth = await initAuthentication();
-            console.log('initAuth', initAuth);
-        } catch (error) {
-            console.log('error', error);
-        }
-    };
-
-    const toSha256String = (signature: any, payload: any) => {
-        try {
-            // Create HMAC using 'sha256' and the provided signature as the key
-            const hmac = QuickCrypto.createHmac('sha256', signature);
-            // Update the HMAC with the payload
-            hmac.update(payload);
-            // Generate the HMAC digest and convert it to a hex string
-            const hash = hmac.digest('hex');
-            return hash;
-        } catch (error) {
-            console.error('Error generating SHA256 string:', error);
-            return '';
-        }
-    };
 
     const initCamera = async () => {
+        const resolution : Resolution = {
+            width: 1920,
+            height: 1080
+        };
+        const resolutions : Resolution[] = [{
+            width: 1080,
+            height: 1920
+        },{
+            width: 720,
+            height: 1280
+        }];
         await AsyncStorage.multiRemove(['fileList', 'fileImageList']);
         var cameraConfiguration  :  CameraConfiguration = {
             lensFacing: LensFacing.Back,
-            flashMode: FlashMode.Off,
+            flashMode: FlashMode.On,
             orientation: Orientation.Portrait,
             outputPath: "",
-            frontResolutions: [],
-            frontResolution: null,
-            backResolutions: [],
-            backResolution: null,
+            frontResolutions: resolutions,
+            frontResolution: resolution,
+            backResolutions: resolutions,
+            backResolution: resolution,
             mode: CameraMode.videoAndImage(),
-
+            imageFormat : ImageFormat.JPEG
         }
+        const isAugInstalled = isAugmentedRealityInstalled();
+        const isAugmentSupported = isAugmentedRealitySupported();
+
+        // var ArConfig : ARCameraConfiguration = {
+        //     outputPath: "",
+        //     orientation: Orientation.Portrait,
+        //     mode: CameraMode.image(),
+        // }
+        // initARCameraScreen(ArConfig).then((response)=>{
+        //     console.log('AR response', response);
+        // }).catch((err)=>{
+        //     console.log('AR err', err);
+        // })
+       
         initCameraScreen(cameraConfiguration) 
             .then((response) => {
-                const mediaItems: MediaItem[] = JSON.parse(response);
-                const videos = mediaItems.filter((item) => item.type === 'VIDEO');
-                const pictures = mediaItems.filter((item) => item.type === 'IMAGE' || 'PICTURE');
+                const mediaItems = response;
+                for(const item of mediaItems|| []){
+                    console.log('item filepath', item.filePath);
+                    console.log('item id', item.id);
+                    console.log('item createdAt', item.createdAt);
+                    console.log('item duration', item.duration);
+                    console.log('item lensFacing', item.lensFacing);
+                    console.log('item orientation', item.orientation);
+                    console.log('item resolution', item.resolution);
+                    console.log('item type', item.type);
+
+                }
+                const videos = mediaItems?.filter((item) => item.type === CameraMediaType.video);
+                const pictures = mediaItems?.filter((item) => item.type === CameraMediaType.image);
                 uploadMediaItems(mediaItems);
                 setUploadPath(videos);
                 setUploadImagePath(pictures);
@@ -113,13 +101,18 @@ const HomeScreen: React.FC = () => {
             });
         
     };
+    function clearAuth() {
+        AsyncStorage.removeItem('authData');
+    }
 
-    const uploadMediaItems = async (mediaItems: MediaItem[]) => {
+    const uploadMediaItems = async (mediaItems: CameraResult[] | null) => {
+        if (!mediaItems) return;
         for (const item of mediaItems) {
             try {
                 //setTag({ key: 'value', color: 'red', orderNumber: 123 });
                 //setMetaData({ key: 'value', key1: 1, key2: [4, 5, 6] });
-                const result = new MediaBuilder(item.filePath)
+                const filePath = `/concat/${item.filePath}`;
+                const result = new MediaBuilder(filePath);
                 // setTag
                 result.setTag("key","value");
                 result.setTag("color","red");
@@ -139,6 +132,9 @@ const HomeScreen: React.FC = () => {
                         },
                         onComplete: (event: UploadCompleteEventData) => { // Use 'any' or proper type for parsed data
                             console.log(`ID: ${event.id}, Type: ${event.fileType}`)
+                            console.log(`ID: ${event.id}, Type: ${JSON.stringify(event.tags)}`)
+                            console.log(`ID: ${event.id}, Type: ${JSON.stringify(event.metaData)}`)
+                            
                         },
                         onError: (event: UploadErrorEvent ) => {
                             console.log(`ID: ${event.id}, Error: ${event.error}`)
@@ -165,17 +161,15 @@ const HomeScreen: React.FC = () => {
         }
     };
 
-    const clearAuth = async () => {
-        try {
-            const result = await clearAuthentication();
-            console.log('Clear authentication successful:', result);
-        } catch (error) {
-            console.error('Clear authentication error:', error);
-        }
-    };
 
-
-    
+    if (loading) {
+        return (
+        <View style={styles.centered}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text>Authenticating...</Text>
+        </View>
+        );
+    }
 
 
     return (
@@ -185,18 +179,31 @@ const HomeScreen: React.FC = () => {
                 source={require('../../img/appstore.png')}
             />
             <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate(Routing.Core)}
+                >
+                    <Text style={styles.buttonText}>Core</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={initCamera}>
                     <Text style={styles.buttonText}>Camera</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate('Video', { uploadPath })}
+                    onPress={() => navigation.navigate(Routing.Video, { uploadPath })}
                 >
                     <Text style={styles.buttonText}>Video</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate('Image', { uploadImagePath })}
+                    onPress={() => navigation.navigate(Routing.Request)}
+                >
+                    <Text style={styles.buttonText}>Video Request</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate(Routing.Image, { uploadImagePath })}
                 >
                     <Text style={styles.buttonText}>Image</Text>
                 </TouchableOpacity>
@@ -206,6 +213,11 @@ const HomeScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

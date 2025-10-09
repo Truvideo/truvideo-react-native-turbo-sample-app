@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageEdit, getFilePath } from 'truvideo-react-turbo-image-sdk';
+import { launchImageEdit, getFilePath } from '@trunpm/truvideo-react-turbo-image-sdk';
 
 type MediaItem = {
     filePath: string;

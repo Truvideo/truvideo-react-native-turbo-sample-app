@@ -18,11 +18,11 @@
     "react-native-quick-crypto": "^0.7.12",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.11.1",
-    "truvideo-react-turbo-camera-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboCameraSdk.git#version-76",
-    "truvideo-react-turbo-core-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboCoreSdk.git",
-    "truvideo-react-turbo-image-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboImageSdk.git#version-76",
-    "truvideo-react-turbo-media-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboMediaSdk.git#version-76",
-    "truvideo-react-turbo-video-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboVideoSdk.git#version-76"
+    "@trunpm/truvideo-react-turbo-camera-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboCameraSdk.git#version-78",
+    "@trunpm/truvideo-react-turbo-core-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboCoreSdk.git#version-78",
+    "@trunpm/truvideo-react-turbo-image-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboImageSdk.git#version-78",
+    "@trunpm/truvideo-react-turbo-media-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboMediaSdk.git#version-78",
+    "@trunpm/truvideo-react-turbo-video-sdk": "git+https://github.com/Truvideo/TruVideoReactTurboVideoSdk.git#version-78"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
