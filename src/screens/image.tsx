@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageEdit, getFilePath } from '@trunpm/truvideo-react-turbo-image-sdk';
-
+import Toast from 'react-native-toast-message';
 type MediaItem = {
     filePath: string;
     createdAt: number;
@@ -19,6 +19,7 @@ const ImageScreen: React.FC = () => {
         try {
             const jsonValue = await AsyncStorage.getItem('fileImageList');
             setUploadImagePath(jsonValue ? JSON.parse(jsonValue) : null);
+
         } catch (error) {
             console.error('Error loading image paths:', error);
         }
@@ -29,8 +30,19 @@ const ImageScreen: React.FC = () => {
         try {
             const resultPath = await getFilePath(`${Date.now()}-editImage.png`);
             const result = await launchImageEdit(selectedItemPath, resultPath);
+
+            Toast.show({
+                type: 'success',
+                text1: 'Image Edited',
+                text2: `Output Path: ${result}`
+            });
             console.log('Image edited successfully:', result);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Edit Failed',
+                text2: `Error: ${error}`
+            });
             console.log('Error editing image:', error);
         }
     };
@@ -51,6 +63,7 @@ const ImageScreen: React.FC = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.createdAt.toString()}
             />
+            <Toast />
         </View>
     );
 };

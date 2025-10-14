@@ -55,6 +55,9 @@ const AuthenticationScreen = () => {
               //generate payload for authentication
               const payload = await generatePayload();
               const signature = await toSha256String(secretKey, payload);
+              console.log("isAuth", isAuth);
+                console.log("isAuthExpired", isAuthExpired);
+            
               // Authenticate user
               if (!isAuth || isAuthExpired) {
                   await authenticate(apiKey, payload, signature, externalId);

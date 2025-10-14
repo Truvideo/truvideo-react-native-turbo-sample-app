@@ -21,6 +21,7 @@ import {
 } from '@trunpm/truvideo-react-turbo-camera-sdk';
 import { MediaBuilder,UploadProgressEvent,UploadCompleteEventData,UploadErrorEvent} from '@trunpm/truvideo-react-turbo-media-sdk';
 import { Routing } from '../../App';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -32,6 +33,7 @@ const HomeScreen: React.FC = () => {
        //clearAuth();
         //authFunc();
     }, []);
+
 
 
     const initCamera = async () => {
@@ -59,8 +61,7 @@ const HomeScreen: React.FC = () => {
             mode: CameraMode.videoAndImage(),
             imageFormat : ImageFormat.JPEG
         }
-        const isAugInstalled = isAugmentedRealityInstalled();
-        const isAugmentSupported = isAugmentedRealitySupported();
+        
 
         // var ArConfig : ARCameraConfiguration = {
         //     outputPath: "",
@@ -111,7 +112,7 @@ const HomeScreen: React.FC = () => {
             try {
                 //setTag({ key: 'value', color: 'red', orderNumber: 123 });
                 //setMetaData({ key: 'value', key1: 1, key2: [4, 5, 6] });
-                const filePath = `/concat/${item.filePath}`;
+                const filePath = `${item.filePath}`;
                 const result = new MediaBuilder(filePath);
                 // setTag
                 result.setTag("key","value");
@@ -128,16 +129,30 @@ const HomeScreen: React.FC = () => {
                 // handle callbacks
                 const uploadCallbacks = {
                         onProgress: (event: UploadProgressEvent) => {
-                            console.log(`ID: ${event.id}, Progress: ${event.progress}%`)
+                            console.log(`ID: ${event.id}, Progress: ${event.progress}`)
                         },
                         onComplete: (event: UploadCompleteEventData) => { // Use 'any' or proper type for parsed data
                             console.log(`ID: ${event.id}, Type: ${event.fileType}`)
-                            console.log(`ID: ${event.id}, Type: ${JSON.stringify(event.tags)}`)
-                            console.log(`ID: ${event.id}, Type: ${JSON.stringify(event.metaData)}`)
+                            console.log(`ID: ${event.id}, Tag: ${JSON.stringify(event.tags)}`)
+                            console.log(`ID: ${event.id}, MetaData: ${JSON.stringify(event.metaData)}`)
+                            console.log(`ID: ${event.id}, Path: ${event.filePath}`)
+                            console.log(`ID: ${event.id}, Path: ${event.uploadPath}`) // remote upload path
+
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Upload Complete',
+                                text2: `File ID: ${event.id}`
+                            });
+                            
                             
                         },
                         onError: (event: UploadErrorEvent ) => {
                             console.log(`ID: ${event.id}, Error: ${event.error}`)
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Upload Failed',
+                                text2: `Error: ${event.error}`
+                            });
                         },
                 };
 
@@ -161,6 +176,8 @@ const HomeScreen: React.FC = () => {
         }
     };
 
+    
+
 
     if (loading) {
         return (
@@ -179,6 +196,7 @@ const HomeScreen: React.FC = () => {
                 source={require('../../img/appstore.png')}
             />
             <View style={styles.buttonContainer}>
+                <Text>Version 2.2</Text>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => navigation.navigate(Routing.Core)}
@@ -208,6 +226,7 @@ const HomeScreen: React.FC = () => {
                     <Text style={styles.buttonText}>Image</Text>
                 </TouchableOpacity>
             </View>
+            <Toast />
         </View>
     );
 };

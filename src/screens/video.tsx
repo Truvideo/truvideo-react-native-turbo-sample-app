@@ -14,6 +14,7 @@ import {
     cleanNoise,
     FrameRate,
 } from '@trunpm/truvideo-react-turbo-video-sdk';
+import Toast from 'react-native-toast-message';
 
 interface MediaItem {
     filePath: string;
@@ -47,6 +48,7 @@ const VideoScreen: React.FC = () => {
         try {
             const jsonValue = await AsyncStorage.getItem('fileList');
             setUploadPath(jsonValue ? JSON.parse(jsonValue) : null);
+
         } catch (error) {
             console.error('Error loading video list:', error);
         }
@@ -65,13 +67,27 @@ const VideoScreen: React.FC = () => {
                 const resultPath = await getResultPath(`${Date.now()}-concatVideo`);
                 const request = new ConcatBuilder(selectedItems, resultPath);
                 const result = request.build();
-                (await result).process();
-                
+                const res = await request.process();
+                Toast.show({
+                    type: 'success',
+                    text1: 'Videos Concatenated',
+                    text2: `Output Path: ${res}`
+                });
                 console.log('Video concatenated successfully:', result);
             } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Concatenation Failed',
+                    text2: `Error: ${error}`
+                });
                 console.error('Error concatenating videos:', error);
             }
         } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Concatenation Failed',
+                text2: 'Videos are not compatible for concatenation.'
+            }); 
             console.log('Videos are not compatible for concatenation.');
         }
     };
@@ -90,8 +106,18 @@ const VideoScreen: React.FC = () => {
         
             // process the video
             //(await result).process
+                Toast.show({
+                    type: 'success',
+                    text1: 'Videos Merged',
+                    text2: `Output Path: ${video}`
+                });
             console.log('Videos merged successfully:', video);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Merge Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error merging videos:', error);
         }
     };
@@ -113,9 +139,19 @@ const VideoScreen: React.FC = () => {
             request.setWidth(480);
             request.setFrameRate(FrameRate.fiftyFps);
             const result = request.build();
-            (await result).process();
+            const res = await request.process();
+            Toast.show({
+                type: 'success',
+                text1: 'Video Encoded',
+                text2: `Output Path: ${res}`
+            });
             console.log('Video encoded successfully:', result);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Encoding Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error encoding video:', error);
         }
     };
@@ -126,8 +162,18 @@ const VideoScreen: React.FC = () => {
         try {
             const resultPath = await getResultPath(`${Date.now()}-thumbnail`);
             const result = await generateThumbnail(selectedItems[0], resultPath, '1000', '640', '480');
+            Toast.show({
+                type: 'success',
+                text1: 'Thumbnail Generated',
+                text2: `Output Path: ${result}`
+            });
             console.log('Thumbnail generated successfully:', result);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Thumbnail Generation Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error generating thumbnail:', error);
         }
     };
@@ -138,8 +184,18 @@ const VideoScreen: React.FC = () => {
         try {
             const resultPath = await getResultPath(`${Date.now()}-editVideo`);
             const result = await editVideo(selectedItems[0], resultPath);
+            Toast.show({
+                type: 'success',
+                text1: 'Video Edited',
+                text2: `Output Path: ${result}`
+            });
             console.log('Video edited successfully:', result);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Edit Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error editing video:', error);
         }
     };
@@ -150,8 +206,18 @@ const VideoScreen: React.FC = () => {
         try {
             const resultPath = await getResultPath(`${Date.now()}-cleanNoise`);
             const result = await cleanNoise(selectedItems[0], resultPath);
+            Toast.show({
+                type: 'success',
+                text1: 'Noise Cleaned',
+                text2: `Output Path: ${result}`
+            });
             console.log('Noise cleaned successfully:', result);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Noise Cleaning Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error cleaning noise:', error);
         }
     };
@@ -172,8 +238,18 @@ const VideoScreen: React.FC = () => {
 
         try {
             const videoInfo = await getVideoInfo(selectedItems[0]);
+            Toast.show({
+                type: 'success',
+                text1: 'Video Info Retrieved',
+                text2: `Duration: ${videoInfo?.durationMillis}, Format: ${videoInfo?.format}}`
+            });
             console.log('Video info:', videoInfo);
         } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Info Retrieval Failed',
+                text2: `Error: ${error}`
+            });
             console.error('Error fetching video info:', error);
         }
     };
@@ -205,6 +281,7 @@ const VideoScreen: React.FC = () => {
                 <CustomBtn onPress={handleCleanNoise} title="Clear Noise" />
                 <CustomBtn onPress={handleGetVideoInfo} title="Info" />
             </View>
+            <Toast />
         </View>
     );
 };
