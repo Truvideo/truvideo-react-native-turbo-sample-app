@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image,ActivityIndicator, NativeEventEmitter,NativeModules} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator, NativeEventEmitter, NativeModules } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -19,9 +19,10 @@ import {
     initARCameraScreen,
     Resolution
 } from '@trunpm/truvideo-react-turbo-camera-sdk';
-import { MediaBuilder,UploadProgressEvent,UploadCompleteEventData,UploadErrorEvent} from '@trunpm/truvideo-react-turbo-media-sdk';
+import { MediaBuilder, UploadProgressEvent, UploadCompleteEventData, UploadErrorEvent } from '@trunpm/truvideo-react-turbo-media-sdk';
 import { Routing } from '../../App';
 import Toast from 'react-native-toast-message';
+import { initAuthentication, isAuthenticated, isAuthenticationExpired } from "@trunpm/truvideo-react-turbo-core-sdk";
 
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -30,26 +31,62 @@ const HomeScreen: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-       //clearAuth();
-        //authFunc();
+        loadAuth();
+    }, []);
+
+    const loadAuth = async () => {
+        setLoading(true);
+        const isAuth = await isAuthenticated();
+
+        // Check if authentication token has expired
+        const isAuthExpired = await isAuthenticationExpired();
+
+        if (isAuth || !isAuthExpired) {
+            const initAuth = await initAuthentication();
+            console.log('Authentication initialized:', initAuth);
+        }
+        setLoading(false);
+    };
+
+    const getFromStorage = async (key: string) => {
+        try {
+            const jsonValue = await AsyncStorage.getItem(key);
+            return jsonValue != null ? JSON.parse(jsonValue) : [];
+        } catch (error) {
+            console.error('Storage read error:', error);
+            return [];
+        }
+    };
+
+    // Load saved data when component mounts
+    useEffect(() => {
+        const loadSavedMedia = async () => {
+            const savedVideos = await getFromStorage('fileList');
+            const savedImages = await getFromStorage('fileImageList');
+            setUploadPath(savedVideos);
+            setUploadImagePath(savedImages);
+        };
+
+        loadSavedMedia();
     }, []);
 
 
 
     const initCamera = async () => {
-        const resolution : Resolution = {
+         
+        const resolution: Resolution = {
             width: 1920,
             height: 1080
         };
-        const resolutions : Resolution[] = [{
+        const resolutions: Resolution[] = [{
             width: 1080,
             height: 1920
-        },{
+        }, {
             width: 720,
             height: 1280
         }];
-        await AsyncStorage.multiRemove(['fileList', 'fileImageList']);
-        var cameraConfiguration  :  CameraConfiguration = {
+        // await AsyncStorage.multiRemove(['fileList', 'fileImageList']);
+        var cameraConfiguration: CameraConfiguration = {
             lensFacing: LensFacing.Back,
             flashMode: FlashMode.On,
             orientation: Orientation.Portrait,
@@ -59,9 +96,13 @@ const HomeScreen: React.FC = () => {
             backResolutions: resolutions,
             backResolution: resolution,
             mode: CameraMode.videoAndImage(),
-            imageFormat : ImageFormat.JPEG
+            imageFormat: ImageFormat.JPEG
         }
-        
+        const isAugInstalled = isAugmentedRealityInstalled();
+        const isAugmentSupported = isAugmentedRealitySupported();
+
+        console.log('isAugInstalled', isAugInstalled);
+        console.log('isAugmentSupported', isAugmentSupported);        
 
         // var ArConfig : ARCameraConfiguration = {
         //     outputPath: "",
@@ -73,11 +114,13 @@ const HomeScreen: React.FC = () => {
         // }).catch((err)=>{
         //     console.log('AR err', err);
         // })
-       
-        initCameraScreen(cameraConfiguration) 
+
+        initCameraScreen(cameraConfiguration)
             .then((response) => {
                 const mediaItems = response;
-                for(const item of mediaItems|| []){
+                console.log("response  <><>", response)
+                console.log("mediaItems<><>", mediaItems)
+                for (const item of mediaItems || []) {
                     console.log('item filepath', item.filePath);
                     console.log('item id', item.id);
                     console.log('item createdAt', item.createdAt);
@@ -87,21 +130,31 @@ const HomeScreen: React.FC = () => {
                     console.log('item resolution', item.resolution);
                     console.log('item type', item.type);
 
-                }
+                }   
+               
                 const videos = mediaItems?.filter((item) => item.type === CameraMediaType.video);
                 const pictures = mediaItems?.filter((item) => item.type === CameraMediaType.image);
                 uploadMediaItems(mediaItems);
                 setUploadPath(videos);
                 setUploadImagePath(pictures);
-                saveToStorage('fileList', videos);
-                saveToStorage('fileImageList', pictures);
+                // saveToStorage('fileList', videos);
+                // saveToStorage('fileImageList', pictures);
+                appendToStorage('fileList', videos || []);
+                appendToStorage('fileImageList', pictures || []);
 
             })
             .catch((err) => {
                 console.log('err', err);
             });
-        
+
     };
+
+    const appendToStorage = async (key: string, newItems: any[]) => {
+        const existing = await getFromStorage(key);
+        const updated = [...existing, ...newItems];
+        await saveToStorage(key, updated);
+    };
+
     function clearAuth() {
         AsyncStorage.removeItem('authData');
     }
@@ -115,45 +168,43 @@ const HomeScreen: React.FC = () => {
                 const filePath = `${item.filePath}`;
                 const result = new MediaBuilder(filePath);
                 // setTag
-                result.setTag("key","value");
-                result.setTag("color","red");
-                result.setTag("orderNumber","123");
+                result.setTag("key", "value");
+                result.setTag("color", "red");
+                result.setTag("orderNumber", "123");
                 // setMetaData
-                result.setMetaData("key","value");
-                result.setMetaData("key1","1");
-                result.setMetaData("key2","[4,5,6]");
+                result.setMetaData("key", "value");
+                result.setMetaData("key1", "1");
+                result.setMetaData("key2", "[4,5,6]");
                 // buiild request
                 console.log(' successful: set data');
                 var request = await result.build()
                 console.log(' successful: set build');
                 // handle callbacks
                 const uploadCallbacks = {
-                        onProgress: (event: UploadProgressEvent) => {
-                            console.log(`ID: ${event.id}, Progress: ${event.progress}`)
-                        },
-                        onComplete: (event: UploadCompleteEventData) => { // Use 'any' or proper type for parsed data
-                            console.log(`ID: ${event.id}, Type: ${event.fileType}`)
-                            console.log(`ID: ${event.id}, Tag: ${JSON.stringify(event.tags)}`)
-                            console.log(`ID: ${event.id}, MetaData: ${JSON.stringify(event.metaData)}`)
-                            console.log(`ID: ${event.id}, Path: ${event.filePath}`)
-                            console.log(`ID: ${event.id}, Path: ${event.uploadPath}`) // remote upload path
+                    onProgress: (event: UploadProgressEvent) => {
+                        console.log(`ID: ${event.id}, Progress: ${event.progress}`)
+                    },
+                    onComplete: (event: UploadCompleteEventData) => { // Use 'any' or proper type for parsed data
+                        console.log(`ID: ${event.id}, Type: ${event.fileType}`)
+                        console.log(`ID: ${event.id}, Tag: ${JSON.stringify(event.tags)}`)
+                        console.log(`ID: ${event.id}, MetaData: ${JSON.stringify(event.metaData)}`)
+                        console.log(`ID: ${event.id}, Path: ${event.filePath}`)
+                        console.log(`ID: ${event.id}, Path: ${event.uploadPath}`) // remote upload path
 
-                            Toast.show({
-                                type: 'success',
-                                text1: 'Upload Complete',
-                                text2: `File ID: ${event.id}`
-                            });
-                            
-                            
-                        },
-                        onError: (event: UploadErrorEvent ) => {
-                            console.log(`ID: ${event.id}, Error: ${event.error}`)
-                            Toast.show({
-                                type: 'error',
-                                text1: 'Upload Failed',
-                                text2: `Error: ${event.error}`
-                            });
-                        },
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Upload Complete',
+                            text2: `File ID: ${event.id}`
+                        });
+                    },
+                    onError: (event: UploadErrorEvent) => {
+                        console.log(`ID: ${event.id}, Error: ${event.error}`)
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Upload Failed',
+                            text2: `Error: ${event.error}`
+                        });
+                    },
                 };
 
                 //const result = await uploadMedia(item.filePath, JSON.stringify(tag), JSON.stringify(metaData));
@@ -164,7 +215,7 @@ const HomeScreen: React.FC = () => {
                 console.error('Upload error:', error);
             }
         }
-        
+
     };
 
     const saveToStorage = async (key: string, value: any) => {
@@ -176,15 +227,13 @@ const HomeScreen: React.FC = () => {
         }
     };
 
-    
-
 
     if (loading) {
         return (
-        <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text>Authenticating...</Text>
-        </View>
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text>Authenticating...</Text>
+            </View>
         );
     }
 

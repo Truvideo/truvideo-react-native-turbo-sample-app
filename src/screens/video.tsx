@@ -40,6 +40,8 @@ const VideoScreen: React.FC = () => {
     const [uploadPath, setUploadPath] = useState<MediaItem[] | null>(null);
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
+    console.log("Upload Path:", uploadPath);
+
     useEffect(() => {
         loadVideos();
     }, []);
@@ -61,17 +63,21 @@ const VideoScreen: React.FC = () => {
     };
 
     const handleConcatVideos = async () => {
+        if (selectedItems.length < 2) {
+            console.log('Select at least two videos to merge.');
+            return;
+        }
         const videoStatus = await handleCompareVideos();
         if (videoStatus) {
             try {
                 const resultPath = await getResultPath(`${Date.now()}-concatVideo`);
                 const request = new ConcatBuilder(selectedItems, resultPath);
-                const result = request.build();
+                const result = await request.build();
                 const res = await request.process();
                 Toast.show({
                     type: 'success',
                     text1: 'Videos Concatenated',
-                    text2: `Output Path: ${res}`
+                    text2: `id: ${res.id}`
                 });
                 console.log('Video concatenated successfully:', result);
             } catch (error) {
@@ -93,6 +99,11 @@ const VideoScreen: React.FC = () => {
     };
 
     const handleMergeVideos = async () => {
+        if (selectedItems.length < 2) {
+            console.log('Select at least two videos to merge.');
+            return;
+        }
+
         try {
             const resultPath = await getResultPath(`${Date.now()}-mergedVideo`);
             const request = new MergeBuilder(selectedItems, resultPath);
@@ -109,7 +120,7 @@ const VideoScreen: React.FC = () => {
                 Toast.show({
                     type: 'success',
                     text1: 'Videos Merged',
-                    text2: `Output Path: ${video}`
+                    text2: `id: ${video.id}`
                 });
             console.log('Videos merged successfully:', video);
         } catch (error) {
@@ -138,14 +149,14 @@ const VideoScreen: React.FC = () => {
             request.setHeight(640);
             request.setWidth(480);
             request.setFrameRate(FrameRate.fiftyFps);
-            const result = request.build();
+            const result = await request.build();
             const res = await request.process();
             Toast.show({
                 type: 'success',
                 text1: 'Video Encoded',
-                text2: `Output Path: ${res}`
+                text2: `id: ${res.id}`
             });
-            console.log('Video encoded successfully:', result);
+            console.log('Video encoded successfully:', res);
         } catch (error) {
             Toast.show({
                 type: 'error',
@@ -184,10 +195,10 @@ const VideoScreen: React.FC = () => {
         try {
             const resultPath = await getResultPath(`${Date.now()}-editVideo`);
             const result = await editVideo(selectedItems[0], resultPath);
-            Toast.show({
+            result && Toast.show({
                 type: 'success',
                 text1: 'Video Edited',
-                text2: `Output Path: ${result}`
+                text2: `outpath: ${result}`
             });
             console.log('Video edited successfully:', result);
         } catch (error) {

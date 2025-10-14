@@ -10,10 +10,13 @@ type MediaItem = {
 
 const ImageScreen: React.FC = () => {
     const [uploadImagePath, setUploadImagePath] = useState<MediaItem[] | null>(null);
+    const [editImagePath, setEditImagePath] = useState("");
 
     useEffect(() => {
         loadImagePaths();
     }, []);
+
+
 
     const loadImagePaths = async () => {
         try {
@@ -25,13 +28,18 @@ const ImageScreen: React.FC = () => {
         }
     };
 
+
+
     const editImage = async (selectedItemPath: string) => {
         console.log('selectedItemPath', selectedItemPath)
         try {
             const resultPath = await getFilePath(`${Date.now()}-editImage.png`);
             const result = await launchImageEdit(selectedItemPath, resultPath);
 
-            Toast.show({
+            console.log('Image edit result:', result);
+            setEditImagePath(result);
+
+          result &&  Toast.show({
                 type: 'success',
                 text1: 'Image Edited',
                 text2: `Output Path: ${result}`
@@ -46,6 +54,10 @@ const ImageScreen: React.FC = () => {
             console.log('Error editing image:', error);
         }
     };
+
+    console.log("Edit Image Path:", typeof (editImagePath));
+    console.log("Edit Image Path:", editImagePath);
+
 
     const renderItem = ({ item }: { item: MediaItem }) => (
         <View style={styles.itemContainer}>
@@ -63,6 +75,7 @@ const ImageScreen: React.FC = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.createdAt.toString()}
             />
+            {/* {editImagePath != "" && <Toast />} */}
             <Toast />
         </View>
     );
